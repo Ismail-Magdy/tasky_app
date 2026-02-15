@@ -1,15 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tasky_app/core/networking/result.dart';
 import 'package:tasky_app/features/auth/data/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class AuthFunctions {
   static CollectionReference<UserModel> get _getCollection {
     return FirebaseFirestore.instance
         .collection(UserModel.collection)
         .withConverter<UserModel>(
-          fromFirestore: (snapshot, options) =>
-              UserModel.fromJson(snapshot.data()!),
+          fromFirestore: (snapshot, _) => UserModel.fromJson(snapshot.data()!),
           toFirestore: (user, _) => user.toJson(),
         );
   }
@@ -27,6 +26,7 @@ abstract class AuthFunctions {
         email: email,
         password: password,
       );
+
       return Success<String>(user.user?.uid ?? "");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -39,8 +39,6 @@ abstract class AuthFunctions {
     }
   }
 
-  //
-
   static Future<Result<UserModel>> registerUser({
     required UserModel user,
   }) async {
@@ -50,22 +48,20 @@ abstract class AuthFunctions {
             email: user.email!,
             password: user.password!,
           );
+
       user.id = credential.user?.uid;
+
       await AuthFunctions.addUser(user);
 
       return Success<UserModel>(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return ErrorState<UserModel>("The Password is too week");
-      } else if (e.code == 'email-already-in-use') {
-        return ErrorState<UserModel>("The email is already Exist");
-      } else if (e.code == 'invalid-email') {
-        return ErrorState<UserModel>("Invalid email");
+        return ErrorState<UserModel>('The password provided is too weak.');
       } else {
-        return ErrorState<UserModel>(e.message ?? "SomeThing Error");
+        return ErrorState<UserModel>(
+          'The account already exists for that email.',
+        );
       }
-    } catch (e) {
-      return ErrorState<UserModel>("Error: ${e.toString()}");
     }
   }
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:tasky_app/core/networking/result.dart';
-import 'package:tasky_app/core/widgets/app_dialog.dart';
-import 'package:tasky_app/core/widgets/custom_text_filed.dart';
-import 'package:tasky_app/features/auth/data/firebase/auth_firebase_database.dart';
-import 'package:tasky_app/features/auth/data/model/user_model.dart';
-import 'package:tasky_app/features/auth/widgets/custom_button.dart';
+import 'package:tasky_app/core/widgets/text_form_field_widget.dart';
+import '../../../core/utils/app_dialog.dart';
+import '../data/firebase/auth_firebase_database.dart';
+import '../data/model/user_model.dart';
 
 class RegisterScreen extends StatefulWidget {
+  static const String routeName = '/register';
+
   const RegisterScreen({super.key});
 
   @override
@@ -14,161 +15,180 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _paswwordController = TextEditingController();
-  final TextEditingController _confirmPaswwordController =
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
       TextEditingController();
-  final GlobalKey<FormState> _key = GlobalKey<FormState>();
-  bool isEyeOne = true;
-  bool isEyeTwo = true;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const .symmetric(horizontal: 24.0, vertical: 80.0),
-          child: Form(
-            key: _key,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //
-                const Text(
-                  "Register",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-                //
-                const SizedBox(height: 30),
-                //
-                const Text(
-                  "Username",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                //
-                const SizedBox(height: 8),
-                //
-                CustomTextField(
-                  controller: _userNameController,
-                  hint: "enter username...",
-                ),
-                //
-                const SizedBox(height: 20),
-                //
-                const Text(
-                  "Email",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                //
-                const SizedBox(height: 8),
-                //
-                CustomTextField(
-                  controller: _emailController,
-                  hint: "enter email...",
-                ),
-                //
-                const SizedBox(height: 20),
-                //
-                const Text(
-                  "Password",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                //
-                const SizedBox(height: 8),
-                //
-                CustomTextField(
-                  obscureText: isEyeOne ? true : false,
-                  controller: _paswwordController,
-                  hint: "Password...",
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isEyeOne = !isEyeOne;
-                      });
-                    },
-                    child: isEyeOne
-                        ? Icon(Icons.visibility_off_outlined)
-                        : Icon(Icons.visibility_outlined),
-                  ),
-                ),
-                //
-                const SizedBox(height: 20),
-                //
-                const Text(
-                  "Confirm Password",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                //
-                const SizedBox(height: 8),
-                //
-                CustomTextField(
-                  obscureText: isEyeTwo ? true : false,
-                  controller: _confirmPaswwordController,
-                  hint: "Password...",
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isEyeTwo = !isEyeTwo;
-                      });
-                    },
-                    child: isEyeTwo
-                        ? Icon(Icons.visibility_off_outlined)
-                        : Icon(Icons.visibility_outlined),
-                  ),
-                ),
-                //
-                const SizedBox(height: 100),
-                //
-                CustomButton(
-                  text: "Register",
-                  onPressed: () async {
-                    _registerUser();
-                  },
-                ),
-                //
-                const SizedBox(height: 140),
-                //
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account? "),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Color(0xFF6332E9),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                //
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   void _registerUser() async {
     AppDialog.showLoading(context);
+
     final result = await AuthFunctions.registerUser(
       user: UserModel(
-        email: _emailController.text,
-        password: _paswwordController.text,
-        userName: _userNameController.text,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        userName: usernameController.text.trim(),
       ),
     );
+
     Navigator.of(context).pop();
+
     switch (result) {
       case Success<UserModel>():
         Navigator.of(context).pop();
+        break;
+
       case ErrorState<UserModel>():
         AppDialog.showError(context: context, message: result.error);
+        break;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 120, right: 24, left: 24),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Register',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff404147),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              TextFormFieldWidget(
+                title: 'Username',
+                hintText: 'enter username...',
+                controller: usernameController,
+                myValidator: (text) {
+                  if (text == null || text.isEmpty) {
+                    return 'Username is required';
+                  }
+                  if (text.length < 3) {
+                    return 'Username must be at least 3 characters';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              TextFormFieldWidget(
+                title: 'Email',
+                hintText: 'enter email...',
+                controller: emailController,
+                myValidator: (text) {
+                  if (text == null || text.isEmpty) {
+                    return 'Email is required';
+                  }
+                  if (!text.contains('@')) {
+                    return 'Enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              TextFormFieldWidget(
+                title: 'Password',
+                hintText: 'enter password...',
+                controller: passwordController,
+                obscureText: true,
+                isPassword: true,
+                myValidator: (text) {
+                  if (text == null || text.isEmpty) {
+                    return 'Password is required';
+                  }
+                  if (text.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              TextFormFieldWidget(
+                title: 'Confirm Password',
+                hintText: 'enter confirm password...',
+                controller: confirmPasswordController,
+                obscureText: true,
+                isPassword: true,
+                myValidator: (text) {
+                  if (text == null || text.isEmpty) {
+                    return 'Confirm password is required';
+                  }
+                  if (text != passwordController.text) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 32),
+
+              MaterialButton(
+                onPressed: () {
+                  if (!formKey.currentState!.validate()) return;
+                  _registerUser();
+                },
+                color: const Color(0xff5F33E1),
+                minWidth: double.infinity,
+                height: 48,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Register',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: InkWell(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              'Already have an account? ',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            Text(
+              'Login',
+              style: TextStyle(
+                color: Color(0xff5F33E1),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
