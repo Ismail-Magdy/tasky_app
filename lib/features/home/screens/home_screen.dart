@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_app/core/networking/result.dart';
 import 'package:tasky_app/features/home/data/model/task_model.dart';
+import 'package:tasky_app/features/home/screens/task_details_screen.dart';
 
 import '../../../core/utils/app_assets.dart';
 import '../../../core/utils/app_dialog.dart';
@@ -22,40 +23,43 @@ class _HomeScreenState extends State<HomeScreen> {
   List<TaskModel> tasks = [];
   bool isLoading = true;
   DateTime _selectedDate = DateTime.now();
+
   @override
   void initState() {
     super.initState();
     getAllTasks(_selectedDate);
   }
 
+  void updateTask(TaskModel task) async {
+    AppDialog.showLoading(context);
+    final result = await HomeFirebase.toggleTaskStatus(task);
+    Navigator.pop(context);
+
+    if (result is Success) {
+      getAllTasks(_selectedDate);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset(AppAssets.logo, width: 90),
+            Image.asset(AppAssets.logo, width: 80),
             const Spacer(),
-            SizedBox(width: 5),
-            Image.asset(AppAssets.logout, height: 30, width: 30),
+            Image.asset(AppAssets.logout, height: 25, width: 25),
             InkWell(
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
                 Navigator.pushReplacementNamed(context, LoginScreen.routeName);
               },
-              child: Text(
-                "Log out",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              child: const Text("Log out", style: TextStyle(color: Colors.red)),
             ),
           ],
         ),
         bottom: BottomDatePicker(
           onDateChange: (date) {
-            // New date selected
             setState(() {
               _selectedDate = date;
               getAllTasks(date);
@@ -64,18 +68,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: const .symmetric(horizontal: 16, vertical: 24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             isLoading
-                ? Align(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
-                  )
+                ? const Center(child: CircularProgressIndicator())
                 : tasks.isEmpty
-                ? EmptyHomeScreen()
-                : DataHomeScreen(tasks: tasks),
+                ? const EmptyHomeScreen()
+                : DataHomeScreen(
+                    tasks: tasks,
+                    onTapCheck: (task) => updateTask(task),
+                    onTapTask: (task) async {
+                      final isDeleted = await Navigator.pushNamed(
+                        context,
+                        TaskDetailsScreen.routeName,
+                        arguments: task,
+                      );
+                      if (isDeleted == true) {
+                        getAllTasks(_selectedDate);
+                      }
+                    },
+                  ),
           ],
         ),
       ),
@@ -85,14 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             isScrollControlled: true,
             builder: (context) => BottomSheetAddTask(
-              notifyTasks: () {
-                getAllTasks(_selectedDate);
-              },
+              notifyTasks: () => getAllTasks(_selectedDate),
             ),
           );
         },
         backgroundColor: const Color(0xFF5F33E1),
-        child: const Icon(Icons.add, size: 30, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -101,16 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
     isLoading = true;
     final result = await HomeFirebase.getTasks(date);
     isLoading = false;
-
-    switch (result) {
-      case Success<List<TaskModel>>():
-        tasks = result.value;
-        setState(() {});
-        break;
-
-      case ErrorState<List<TaskModel>>():
-        AppDialog.showError(context: context, message: result.error);
-        break;
+    if (result is Success<List<TaskModel>>) {
+      tasks = result.value;
+      setState(() {});
     }
   }
 }
@@ -121,23 +125,23 @@ class EmptyHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         Image.asset(AppAssets.homeEmpty),
-        SizedBox(height: 5),
-        Text(
+        const SizedBox(height: 5),
+        const Text(
           "What do you want to do today?",
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.w400,
+            fontWeight: .w400,
             color: Color(0xff404147),
           ),
         ),
-        Text(
+        const Text(
           "Tap + to add your tasks",
           style: TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w400,
+            fontWeight: .w400,
             color: Color(0xff404147),
           ),
         ),
@@ -147,35 +151,113 @@ class EmptyHomeScreen extends StatelessWidget {
 }
 
 class DataHomeScreen extends StatelessWidget {
-  const DataHomeScreen({super.key, required this.tasks});
+  const DataHomeScreen({
+    super.key,
+    required this.tasks,
+    required this.onTapCheck,
+    required this.onTapTask,
+  });
   final List<TaskModel> tasks;
+  final Function(TaskModel) onTapCheck;
+  final Function(TaskModel) onTapTask;
 
   @override
   Widget build(BuildContext context) {
+    final pending = tasks.where((t) => t.isDone == false).toList();
+    final completed = tasks.where((t) => t.isDone == true).toList();
+
     return Expanded(
-      child: ListView.builder(
-        itemBuilder: (context, index) => Card(
-          color: Color(0xff5F33E1),
-          child: ListTile(
-            leading: Text(
-              tasks[index].priority.toString(),
-              style: TextStyle(color: Colors.white),
+      child: ListView(
+        children: [
+          ...pending.map((task) => _buildTaskCard(task, context)),
+          if (completed.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Align(
+              alignment: .centerLeft,
+              child: Chip(
+                label: const Text("Completed"),
+                backgroundColor: Colors.transparent,
+              ),
             ),
-            trailing: Text(
-              tasks[index].date.toString(),
-              style: TextStyle(color: Colors.white),
-            ),
-            title: Text(
-              tasks[index].title ?? "",
-              style: TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              tasks[index].description ?? "",
-              style: TextStyle(color: Colors.white),
+            const SizedBox(height: 10),
+            ...completed.map((task) => _buildTaskCard(task, context)),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(TaskModel task, BuildContext context) {
+    return Container(
+      margin: const .only(bottom: 12),
+      padding: const .all(16),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: .circular(15),
+        border: .all(color: Colors.grey),
+      ),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () => onTapCheck(task),
+            child: Icon(
+              task.isDone!
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: const Color(0xff5F33E1),
+              size: 28,
             ),
           ),
-        ),
-        itemCount: tasks.length,
+          const SizedBox(width: 15),
+          Expanded(
+            child: InkWell(
+              onTap: () => onTapTask(task),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    task.title ?? "",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: .w500,
+                      decoration: task.isDone! ? .lineThrough : null,
+                      color: task.isDone! ? Colors.grey : Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "Today At ${task.date?.hour}:${task.date?.minute.toString().padLeft(2, '0')}",
+                    style: const TextStyle(color: Colors.grey, fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: const .symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: .circular(8),
+              border: .all(color: Color(0xff5F33E1)),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.flag_outlined,
+                  size: 14,
+                  color: Color(0xff5F33E1),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  task.priority.toString(),
+                  style: const TextStyle(
+                    color: Color(0xff5F33E1),
+                    fontWeight: .bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -189,8 +271,8 @@ class BottomDatePicker extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return DatePicker(
-      DateTime.now(),
-      initialSelectedDate: DateTime.now(),
+      .now(),
+      initialSelectedDate: .now(),
       selectionColor: Colors.black,
       selectedTextColor: Colors.white,
       height: 100,
@@ -199,5 +281,5 @@ class BottomDatePicker extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(100);
 }

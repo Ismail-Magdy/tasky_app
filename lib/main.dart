@@ -8,3 +8,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(TaskyApp());
 }
+
+// ism@il12
+// ismailmagdy021@gmail.com
+// som3a2005

@@ -5,7 +5,7 @@ import 'login_screen.dart';
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = '/onboarding';
 
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -55,9 +55,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const .symmetric(horizontal: 24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               const SizedBox(height: 40),
               Expanded(
@@ -71,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   itemBuilder: (context, index) {
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: .center,
                       children: [
                         Image.asset(
                           onboardingData[index]["image"]!,
@@ -80,7 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         const SizedBox(height: 30),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: .center,
                           children: List.generate(
                             onboardingData.length,
                             (i) => buildDot(i),
@@ -92,22 +92,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: const TextStyle(
                             color: Color(0xff24252C),
                             fontSize: 32,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: .bold,
                           ),
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                         const SizedBox(height: 42),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          padding: const .symmetric(horizontal: 10),
                           child: Text(
                             onboardingData[index]["desc"]!,
                             style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: .w400,
                               color: Color(0xff6E6A7C),
                               height: 1.6,
                             ),
-                            textAlign: TextAlign.center,
+                            textAlign: .center,
                           ),
                         ),
                       ],
@@ -116,19 +116,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               Align(
-                alignment: Alignment.centerRight,
+                alignment: .centerRight,
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 40),
+                  margin: const .only(bottom: 40),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff5F33E1),
                       elevation: 4,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 28,
-                        vertical: 14,
-                      ),
+                      padding: const .symmetric(horizontal: 28, vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: .circular(10),
                       ),
                     ),
                     onPressed: nextPage,
@@ -139,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: const TextStyle(
                         color: Color(0xffFFFFFF),
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                   ),
@@ -155,14 +152,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget buildDot(int index) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.symmetric(horizontal: 5),
+      margin: const .symmetric(horizontal: 5),
       height: 8,
       width: currentIndex == index ? 26 : 8,
       decoration: BoxDecoration(
         color: currentIndex == index
             ? const Color(0xff5F33E1)
             : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: .circular(20),
       ),
     );
   }

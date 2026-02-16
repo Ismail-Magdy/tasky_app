@@ -31,14 +31,14 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       spacing: 2,
       children: [
         Text(
           widget.title,
           style: TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w400,
+            fontWeight: .w400,
             color: Color(0xff716C7E),
           ),
         ),
@@ -46,9 +46,9 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
         TextFormField(
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w400,
+            fontWeight: .w400,
             color: Colors.black,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
           ),
 
           obscureText: widget.obscureText,
@@ -73,7 +73,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
                   )
                 : null,
 
-            contentPadding: const EdgeInsets.all(15),
+            contentPadding: const .all(15),
             enabledBorder: outlineInputBorder(
               color: Color(0xff716C7E),
               radius: 10,
@@ -104,7 +104,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
     required double width,
   }) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: .circular(radius),
       borderSide: BorderSide(color: color, width: width),
     );
   }

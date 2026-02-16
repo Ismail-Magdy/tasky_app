@@ -50,18 +50,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 120, right: 24, left: 24),
+        padding: const .only(top: 120, right: 24, left: 24),
         child: Form(
           key: formKey,
           child: Column(
             spacing: 24,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Text(
                 'Login',
                 style: TextStyle(
                   fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: Color(0xff404147),
                 ),
               ),
@@ -90,17 +90,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   _login();
                 },
                 color: const Color(0xff5F33E1),
-                minWidth: double.infinity,
+                minWidth: .infinity,
                 height: 48,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(10)),
                 child: const Text(
                   'Login',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
               ),
@@ -114,15 +112,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pushNamed(RegisterScreen.routeName);
         },
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: const [
             Text('Don’t have an account? '),
             Text(
               'Register',
-              style: TextStyle(
-                color: Color(0xff5F33E1),
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Color(0xff5F33E1), fontWeight: .bold),
             ),
           ],
         ),

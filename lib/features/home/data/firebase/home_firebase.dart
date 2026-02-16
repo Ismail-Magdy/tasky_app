@@ -39,7 +39,7 @@ abstract class HomeFirebase {
     final normalizedDate = DateTime(date.year, date.month, date.day);
     try {
       final querySnapshot = await _getCollection
-          .where("date", isEqualTo: normalizedDate.microsecondsSinceEpoch)
+          .where("date", isEqualTo: normalizedDate.millisecondsSinceEpoch)
           .get();
       final docs = querySnapshot.docs;
 
@@ -48,6 +48,33 @@ abstract class HomeFirebase {
       return Success<List<TaskModel>>(listOfTask);
     } catch (e) {
       return ErrorState<List<TaskModel>>(e.toString());
+    }
+  }
+
+  static Future<Result<void>> toggleTaskStatus(TaskModel task) async {
+    try {
+      await _getCollection.doc(task.id).update({"isDone": !task.isDone!});
+      return Success(null);
+    } catch (e) {
+      return ErrorState(e.toString());
+    }
+  }
+
+  static Future<Result<void>> deleteTask(String taskId) async {
+    try {
+      await _getCollection.doc(taskId).delete();
+      return Success(null);
+    } catch (e) {
+      return ErrorState(e.toString());
+    }
+  }
+
+  static Future<Result<void>> updateTask(TaskModel task) async {
+    try {
+      await _getCollection.doc(task.id).update(task.toJson());
+      return Success(null);
+    } catch (e) {
+      return ErrorState(e.toString());
     }
   }
 }

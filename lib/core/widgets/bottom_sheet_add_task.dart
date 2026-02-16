@@ -10,18 +10,35 @@ import '../utils/app_dialog.dart';
 import 'alert_dialog_task_priority.dart';
 
 class BottomSheetAddTask extends StatefulWidget {
-  const BottomSheetAddTask({super.key, required this.notifyTasks});
+  const BottomSheetAddTask({
+    super.key,
+    required this.notifyTasks,
+    this.taskToEdit,
+  });
+
   final void Function() notifyTasks;
+  final TaskModel? taskToEdit;
 
   @override
   State<BottomSheetAddTask> createState() => _BottomSheetAddTaskState();
 }
 
 class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
-  DateTime selectedDate = DateTime.now();
-  int selectedPriority = 1;
-  var title = TextEditingController();
-  var description = TextEditingController();
+  late DateTime selectedDate;
+  late int selectedPriority;
+  late TextEditingController title;
+  late TextEditingController description;
+
+  @override
+  void initState() {
+    super.initState();
+    title = TextEditingController(text: widget.taskToEdit?.title ?? "");
+    description = TextEditingController(
+      text: widget.taskToEdit?.description ?? "",
+    );
+    selectedDate = widget.taskToEdit?.date ?? DateTime.now();
+    selectedPriority = widget.taskToEdit?.priority ?? 1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +53,14 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Add Task",
-            style: TextStyle(
+            widget.taskToEdit == null ? "Add Task" : "Edit Task",
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w400,
               color: Color(0xff404147),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           TextFormFieldWidget(
             title: "Title",
@@ -52,7 +69,7 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
             myValidator: ValidatorApp.validateName,
           ),
 
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           TextFormFieldWidget(
             title: "Description",
@@ -60,7 +77,7 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
             controller: description,
             myValidator: ValidatorApp.validateName,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             children: [
               _IconAddTask(
@@ -69,14 +86,16 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
                   selectedDate =
                       await showDatePicker(
                         context: context,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 30)),
-                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now().subtract(
+                          const Duration(days: 365),
+                        ),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                        initialDate: selectedDate,
                       ) ??
-                      DateTime.now();
+                      selectedDate;
                 },
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               _IconAddTask(
                 imagePath: AppAssets.flagIcon,
                 onTap: () {
@@ -93,36 +112,41 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
               const Spacer(),
               _IconAddTask(
                 imagePath: AppAssets.sendIcon,
-                onTap: _addTaskOFirebase,
+                onTap: _saveTaskLogic,
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  void _addTaskOFirebase() async {
+  void _saveTaskLogic() async {
+    if (title.text.isEmpty) return;
+
     AppDialog.showLoading(context);
 
     final task = TaskModel(
+      id: widget.taskToEdit?.id,
       title: title.text,
       description: description.text,
       date: selectedDate,
       priority: selectedPriority,
+      isDone: widget.taskToEdit?.isDone ?? false,
     );
 
-    final result = await HomeFirebase.addTask(task);
+    final result = widget.taskToEdit == null
+        ? await HomeFirebase.addTask(task)
+        : await HomeFirebase.updateTask(task);
+
     Navigator.of(context).pop();
 
-    switch (result) {
-      case Success<TaskModel>():
-        Navigator.of(context).pop();
-        widget.notifyTasks;
-
-      case ErrorState<TaskModel>():
-        AppDialog.showError(context: context, message: result.error);
+    if (result is Success) {
+      widget.notifyTasks();
+      Navigator.of(context).pop(true);
+    } else if (result is ErrorState) {
+      AppDialog.showError(context: context, message: (result).error);
     }
   }
 }

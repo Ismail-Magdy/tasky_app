@@ -51,17 +51,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 120, right: 24, left: 24),
+        padding: const .only(top: 120, right: 24, left: 24),
         child: Form(
           key: formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Text(
                 'Register',
                 style: TextStyle(
                   fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                   color: Color(0xff404147),
                 ),
               ),
@@ -145,17 +145,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _registerUser();
                 },
                 color: const Color(0xff5F33E1),
-                minWidth: double.infinity,
+                minWidth: .infinity,
                 height: 48,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(10)),
                 child: const Text(
                   'Register',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
               ),
@@ -168,14 +166,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Navigator.of(context).pop();
         },
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: const [
             Text(
               'Already have an account? ',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-                fontWeight: FontWeight.w400,
+                fontWeight: .w400,
               ),
             ),
             Text(
@@ -183,7 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               style: TextStyle(
                 color: Color(0xff5F33E1),
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ),
           ],

@@ -20,6 +20,7 @@ dependencies:
   firebase_auth: ^4.16.0
   cloud_firestore: ^4.17.5
   date_picker_timeline: ^1.2.7
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:

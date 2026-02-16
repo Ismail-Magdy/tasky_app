@@ -19,13 +19,13 @@ class _AlertDialogTaskPriorityState extends State<AlertDialogTaskPriority> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: const [
           Text(
             "Task Priority",
             style: TextStyle(
               color: Colors.black,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               fontSize: 16,
             ),
           ),
@@ -64,14 +64,12 @@ class _ItemTaskPriority extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: Duration(milliseconds: 400),
-        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 20),
+        padding: const .symmetric(vertical: 7, horizontal: 20),
         margin: EdgeInsets.only(right: 3, bottom: 10),
         decoration: BoxDecoration(
           color: isSelected ? Color(0xff5F33E1) : null,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected ? Color(0xff5F33E1) : Colors.grey,
-          ),
+          borderRadius: .circular(10),
+          border: .all(color: isSelected ? Color(0xff5F33E1) : Colors.grey),
         ),
         child: Column(
           spacing: 7,
@@ -86,7 +84,7 @@ class _ItemTaskPriority extends StatelessWidget {
               index.toString(),
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 fontSize: 16,
               ),
             ),
