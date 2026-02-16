@@ -1,9 +1,9 @@
 const String emailRegexString =
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-const String passwordRegexString = r'^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@]{6,}$';
+const String passwordRegexString = r'^[A-Za-z\d@]{6,}$';
 const String usernameRegexString = r'^[a-zA-Z0-9,.-]+$';
 
-abstract class Validator {
+abstract class ValidatorApp {
   static String? validateEmail(String? val) {
     final RegExp emailRegex = RegExp(emailRegexString);
     if (val == null || val.trim().isEmpty) {
@@ -48,11 +48,13 @@ abstract class Validator {
     if (val == null || val.trim().isEmpty) {
       return 'Phone number cannot be empty';
     }
+
     final phone = val.trim();
     final isValid = RegExp(r'^\+?\d+$').hasMatch(phone);
     if (!isValid || phone.length != 13) {
       return 'Enter a valid phone number';
     }
+
     return null;
   }
 
