@@ -30,16 +30,19 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text,
       );
 
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
 
       switch (result) {
         case Success<String>():
           Navigator.of(
+            // ignore: use_build_context_synchronously
             context,
           ).pushNamedAndRemoveUntil(HomeScreen.routeName, (route) => false);
           break;
 
         case ErrorState<String>():
+          // ignore: use_build_context_synchronously
           AppDialog.showError(context: context, message: result.error);
           break;
       }

@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void updateTask(TaskModel task) async {
     AppDialog.showLoading(context);
     final result = await HomeFirebase.toggleTaskStatus(task);
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
 
     if (result is Success) {
@@ -52,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
             InkWell(
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
+                // ignore: use_build_context_synchronously
                 Navigator.pushReplacementNamed(context, LoginScreen.routeName);
               },
               child: const Text("Log out", style: TextStyle(color: Colors.red)),
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-        padding: const .symmetric(horizontal: 16, vertical: 24),
+        padding: const .symmetric(horizontal: 16, vertical: 20),
         child: Column(
           children: [
             isLoading
@@ -124,28 +126,30 @@ class EmptyHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: .center,
-      children: [
-        Image.asset(AppAssets.homeEmpty),
-        const SizedBox(height: 5),
-        const Text(
-          "What do you want to do today?",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: .w400,
-            color: Color(0xff404147),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: .center,
+        children: [
+          Image.asset(AppAssets.homeEmpty),
+          const SizedBox(height: 5),
+          const Text(
+            "What do you want to do today?",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: .w400,
+              color: Color(0xff404147),
+            ),
           ),
-        ),
-        const Text(
-          "Tap + to add your tasks",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: .w400,
-            color: Color(0xff404147),
+          const Text(
+            "Tap + to add your tasks",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: .w400,
+              color: Color(0xff404147),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -275,7 +279,7 @@ class BottomDatePicker extends StatelessWidget implements PreferredSizeWidget {
       initialSelectedDate: .now(),
       selectionColor: Colors.black,
       selectedTextColor: Colors.white,
-      height: 100,
+      height: 120,
       onDateChange: onDateChange,
     );
   }

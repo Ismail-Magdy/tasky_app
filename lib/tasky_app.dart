@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky_app/features/auth/screens/on_boarding_screen.dart';
 import 'package:tasky_app/features/home/screens/home_screen.dart';
-import 'package:tasky_app/features/home/screens/task_details_screen.dart'; // استيراد الشاشة الجديدة
+import 'package:tasky_app/features/home/screens/task_details_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'package:tasky_app/features/auth/screens/register_screen.dart';
 

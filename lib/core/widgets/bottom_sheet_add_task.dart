@@ -140,12 +140,15 @@ class _BottomSheetAddTaskState extends State<BottomSheetAddTask> {
         ? await HomeFirebase.addTask(task)
         : await HomeFirebase.updateTask(task);
 
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
 
     if (result is Success) {
       widget.notifyTasks();
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop(true);
     } else if (result is ErrorState) {
+      // ignore: use_build_context_synchronously
       AppDialog.showError(context: context, message: (result).error);
     }
   }

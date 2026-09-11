@@ -90,12 +90,15 @@ class TaskDetailsScreen extends StatelessWidget {
               onTap: () async {
                 AppDialog.showLoading(context);
                 final result = await HomeFirebase.deleteTask(task.id!);
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context);
 
                 if (result is Success) {
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context, true);
                 } else if (result is ErrorState) {
                   AppDialog.showError(
+                    // ignore: use_build_context_synchronously
                     context: context,
                     message: (result).error,
                   );
@@ -122,6 +125,7 @@ class TaskDetailsScreen extends StatelessWidget {
                       BottomSheetAddTask(taskToEdit: task, notifyTasks: () {}),
                 );
                 if (isUpdated == true) {
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context, true);
                 }
               },

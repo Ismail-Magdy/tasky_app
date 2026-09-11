@@ -34,14 +34,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
 
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
 
     switch (result) {
       case Success<UserModel>():
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
         break;
 
       case ErrorState<UserModel>():
+        // ignore: use_build_context_synchronously
         AppDialog.showError(context: context, message: result.error);
         break;
     }
